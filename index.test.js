@@ -71,18 +71,59 @@ test('Crew has crewmember who has salary', async()=>{
     expect(testCrew.salary).toBe(3000);
            })
 
-        //    this will connect test file with index.
-           await testMovies.addCrew(testCrew1)
-           await testMovies.addCrew(testCrew2)
-           await testMovie.addCast(testCast1)
-           await testMovie.addCast(testCast2)
 
-afterAll(async()=>{
-    sequelize.close()
+test('Movies can have Crew',async()=>{
+    // read the test movies instnce from db
+    const testMovies = await Movies.findOne({where:{title:'Rocky'}});
+    // create 2 test instance of of Crew
+    const testCrew1= await Crew.findOne({where:{name:'John'}});
+    const testCrew2 = await Crew.findOne({where:{name:'Cathy'}});
+    const testCrew3 = await Crew.findOne({where:{name:'Martha'}})
+    // add test Crew to test Movies
+    await testMovies.addCrew(testCrew1)
+    await testMovies.addCrew(testCrew2)
+    await testMovies.addCrew(testCrew3)
+    // retrieve list of Crew in the movies
+    const crewsList = await testMovies.getCrews()
+    // const crewsList = await testMovies.getCrews()
+    // const crewList = await testMovies.getCrews()
+    expect(crewsList.length).toBe(3)
+    expect(crewsList[2] instanceof Crew).toBeTruthy()
+    expect(crewsList[2].name).toMatch('Martha')
+
+
+})
+test('movies can have Cast',async()=>{
+
+    // read the test movies instance from database
+    const testMovies = await Movies.findOne({where:{director:'James'}});
+    
+    // create 2 test instance of cast
+    const testCast1 = await Cast.findOne({where:{name:"van Damme"}})
+    const testCast2 = await Cast.findOne({where:{name:"Jackman"}})
+
+    // add testCast into testMovies to create bondage between two test.
+    await testMovies.addCast(testCast1)
+    await testMovies.addCast(testCast2)
+    // retrieve the list of Crew in this Movies
+    const castList = await testMovies.getCasts()
+    expect(castList.length).toBe(2)
+    expect(castList[1]instanceof Cast).toBeTruthy()
+    expect(castList[1].name).toMatch('Jackman')
+
 })
 
 
 
+        //    this will connect test file with index.
+        //    await testMovies.addCrew(testCrew1)
+        //    await testMovies.addCrew(testCrew2)
+        //    await testMovie.addCast(testCast1)
+        //    await testMovie.addCast(testCast2)
+
+afterAll(async()=>{
+    sequelize.close()
+})
 
 
 })
